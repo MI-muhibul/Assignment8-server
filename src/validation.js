@@ -17,9 +17,10 @@ const registerInput = z.object({
   imageUrl: z.string().url().max(2048).optional().or(z.literal("")),
 });
 const loginInput = z.object({ email: emailSchema, password: z.string().min(1).max(72) });
+const googleInput = z.object({ credential: z.string().min(1).max(8192) });
 const profileInput = z.object({
   name: z.string().trim().min(2).max(80),
   imageUrl: z.string().url().max(2048).or(z.literal("")),
 });
 
-module.exports = { idSchema, eventInput, registerInput, loginInput, profileInput };
+module.exports = { idSchema, eventInput, registerInput, loginInput, googleInput, profileInput };
