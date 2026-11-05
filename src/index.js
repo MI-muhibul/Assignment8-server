@@ -32,7 +32,7 @@ async function start() {
     throw new Error("Set JWT_SECRET to a random string of at least 32 characters.");
   }
   await mongoose.connect(process.env.MONGODB_URI);
-  app.listen(port, () => console.log(`Good Neighbors API listening on port ${port}`));
+  app.listen(port, "0.0.0.0", () => console.log(`Good Neighbors API listening on port ${port}`));
 }
 
 start().catch((error) => {
