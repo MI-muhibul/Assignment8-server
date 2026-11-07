@@ -21,10 +21,10 @@ router.get("/", asyncRoute(async (req, res) => {
 
 router.get("/:id", asyncRoute(async (req, res) => {
   if (!idSchema.safeParse(req.params.id).success) return sendError(res, 400, "Invalid event id.");
-  const event = await Event.findOne({ _id: req.params.id, date: { $gt: new Date() } })
+  const event = await Event.findById(req.params.id)
     .populate("createdBy", "name imageUrl")
     .lean();
-  if (!event) return sendError(res, 404, "This upcoming event could not be found.");
+  if (!event) return sendError(res, 404, "This event could not be found.");
   return res.json({ event });
 }));
 
@@ -33,7 +33,12 @@ router.post("/", authenticate, asyncRoute(async (req, res) => {
   if (!parsed.success) return sendError(res, 400, parsed.error.issues[0].message);
   const date = new Date(parsed.data.date);
   if (date <= new Date()) return sendError(res, 400, "Choose a future date for your event.");
-  const event = await Event.create({ ...parsed.data, date, createdBy: req.user.id });
+  const event = await Event.create({
+    ...parsed.data,
+    date,
+    createdBy: req.user.id,
+    createdByEmail: req.user.email,
+  });
   return res.status(201).json({ event });
 }));
 

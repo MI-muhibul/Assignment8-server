@@ -13,7 +13,7 @@ router.get("/mine/created", authenticate, asyncRoute(async (req, res) => {
 }));
 
 router.get("/mine/joined", authenticate, asyncRoute(async (req, res) => {
-  const events = await Event.find({ joinedBy: req.user.id, date: { $gt: new Date() } })
+  const events = await Event.find({ joinedBy: req.user.id })
     .sort({ date: 1 })
     .populate("createdBy", "name imageUrl")
     .lean();
@@ -43,7 +43,7 @@ router.patch("/:id", authenticate, asyncRoute(async (req, res) => {
   if (date <= new Date()) return sendError(res, 400, "Choose a future date for your event.");
   const event = await Event.findOneAndUpdate(
     { _id: req.params.id, createdBy: req.user.id },
-    { ...parsed.data, date },
+    { ...parsed.data, date, createdByEmail: req.user.email },
     { new: true, runValidators: true },
   );
   if (!event) return sendError(res, 404, "Event not found or you do not have permission to edit it.");

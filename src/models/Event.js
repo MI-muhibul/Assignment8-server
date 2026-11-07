@@ -9,6 +9,7 @@ const eventSchema = new mongoose.Schema(
     location: { type: String, required: true, trim: true },
     date: { type: Date, required: true },
     createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    createdByEmail: { type: String, required: true, trim: true, lowercase: true },
     joinedBy: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
   },
   { timestamps: true },
