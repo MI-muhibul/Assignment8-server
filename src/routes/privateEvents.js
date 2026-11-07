@@ -15,6 +15,7 @@ router.get("/mine/created", authenticate, asyncRoute(async (req, res) => {
 router.get("/mine/joined", authenticate, asyncRoute(async (req, res) => {
   const events = await Event.find({ joinedBy: req.user.id })
     .sort({ date: 1 })
+    .select("-createdByEmail")
     .populate("createdBy", "name imageUrl")
     .lean();
   return res.json({ events });
@@ -26,7 +27,7 @@ router.post("/:id/join", authenticate, asyncRoute(async (req, res) => {
     { _id: req.params.id, date: { $gt: new Date() }, joinedBy: { $ne: req.user._id } },
     { $addToSet: { joinedBy: req.user._id } },
     { new: true },
-  );
+  ).select("-createdByEmail");
   if (!event) {
     const exists = await Event.exists({ _id: req.params.id, date: { $gt: new Date() } });
     if (!exists) return sendError(res, 404, "This upcoming event could not be found.");
